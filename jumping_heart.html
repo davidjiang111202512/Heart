@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Happy Birthday My Love</title>
+  <style>
+    html, body {
+      margin: 0;
+      overflow: hidden;
+      height: 100%;
+      background: radial-gradient(circle at center, #fff0f5, #ffe6f0);
+      font-family: 'Segoe UI', sans-serif;
+    }
+    #message {
+      position: absolute;
+      top: 10%;
+      width: 100%;
+      text-align: center;
+      font-size: 2.5em;
+      color: #ff3399;
+      text-shadow: 0 0 10px #ff99cc, 0 0 20px #ff66cc;
+      animation: glow 2s ease-in-out infinite alternate;
+      z-index: 10;
+    }
+    @keyframes glow {
+      from { opacity: 0.7; }
+      to { opacity: 1; }
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div id="message">Happy 520 my love 💖</div>
+  <canvas id="canvas"></canvas>
+
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    let width, height;
+
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+
+    window.addEventListener("resize", resize);
+    resize();
+
+    function drawHeart(x, y, size, color) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(size, size);
+      ctx.beginPath();
+      ctx.moveTo(0, -2);
+      ctx.bezierCurveTo(2, -4, 4, -1.5, 0, 3);
+      ctx.bezierCurveTo(-4, -1.5, -2, -4, 0, -2);
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 50;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    let t = 0;
+    const sparkles = [];
+
+    function createSparkle() {
+      const x = Math.random() * width;
+      const y = -10;
+      const speed = 0.5 + Math.random() * 1.5;
+      const size = 1 + Math.random() * 2;
+      sparkles.push({ x, y, speed, size });
+    }
+
+    function drawSparkles() {
+      ctx.save();
+      ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+      for (let s of sparkles) {
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+        ctx.fill();
+        s.y += s.speed;
+      }
+      ctx.restore();
+      while (sparkles.length > 100) sparkles.shift();
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+
+      const beat = 0.9 + Math.sin(t * 2) * 0.05;
+
+      const gradient = ctx.createLinearGradient(0, 0, width, height);
+      gradient.addColorStop(0, `hsl(${(t * 60) % 360}, 100%, 70%)`);
+      gradient.addColorStop(1, `hsl(${(t * 60 + 180) % 360}, 100%, 70%)`);
+
+      // 💥 Larger heart: Increase size from 20 to 50
+      drawHeart(width / 2, height / 2, 50 * beat, gradient);
+
+      if (Math.random() < 0.3) createSparkle();
+      drawSparkles();
+
+      t += 0.02;
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+</body>
+</html>
+
